@@ -15,24 +15,15 @@ class DisBot(commands.Bot):
         help_command: commands.HelpCommand | None = None,
     ):
         """Инициализация бота."""
-        super().__init__(
-            command_prefix=command_prefix, intents=intents, help_command=help_command
-        )
-        
+        super().__init__(command_prefix=command_prefix, intents=intents, help_command=help_command)
+
     async def setup_hook(self) -> None:
         """Загрузка расширений (Cogs) при старте бота."""
+        await self.load_extension("app.cogs.admin")
         await self.load_extension("app.cogs.general")
-        await self.load_extension("app.cogs.ai")
+        await self.load_extension("app.cogs.error_handler")
 
     async def on_ready(self) -> None:
         """Инициализация при подключении бота к Discord."""
         await init_models()
         start_scheduler(self)
-
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
-        """Обработка ошибок команд."""
-        if isinstance(error, commands.CommandNotFound):
-            return  # Игнорируем ошибку, так как неизвестные команды обрабатываются как запросы к ИИ
-        
-        # Выводим остальные ошибки
-        print(f"Ошибка при выполнении команды: {error}")

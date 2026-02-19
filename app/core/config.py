@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
 class Config:
     """Класс для управления конфигурацией бота."""
 
@@ -33,5 +32,6 @@ class Config:
         if not self.DATABASE_URL:
             print("DATABASE_URL не найден в переменных окружения!")
             raise ValueError("DATABASE_URL is required")
+
 
 settings = Config()

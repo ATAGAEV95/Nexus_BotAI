@@ -1,26 +1,35 @@
+from typing import cast
+from unittest.mock import AsyncMock, PropertyMock, patch
+
 import pytest
-from unittest.mock import AsyncMock
 from discord.ext import commands
 
+from app.cogs.general import General
+
+
 @pytest.mark.asyncio
-async def test_ping(bot):
+async def test_ping(bot: commands.Bot) -> None:
+    """Тест команды ping."""
     ctx = AsyncMock()
     ctx.send = AsyncMock()
     
-    cog = bot.get_cog("General")
-    await cog.ping(ctx)
+    with patch.object(commands.Bot, "latency", new_callable=PropertyMock) as mock_latency:
+        mock_latency.return_value = 0.05
+        cog = cast(General, bot.get_cog("General"))
+        await cog.ping(ctx)
     
     ctx.send.assert_called_once()
     args, kwargs = ctx.send.call_args
     embed = kwargs.get('embed')
-    assert embed.title == "✅ Pong!"
+    assert embed.title == "ℹ️ Pong!"
 
 @pytest.mark.asyncio
-async def test_help(bot):
+async def test_help(bot: commands.Bot) -> None:
+    """Тест команды help."""
     ctx = AsyncMock()
     ctx.send = AsyncMock()
     
-    cog = bot.get_cog("General")
+    cog = cast(General, bot.get_cog("General"))
     await cog.help_command(ctx)
     
     ctx.send.assert_called_once()

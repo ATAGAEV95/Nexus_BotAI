@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from datetime import date
+from datetime import date, timedelta
 from email.utils import parsedate_to_datetime
 
 import aiohttp
@@ -21,6 +21,7 @@ def parse_rss(xml_content: str) -> list[str]:
 
     valid_titles = []
     today = date.today()
+    yesterday = today - timedelta(days=1)
 
     for item in channel.findall("item"):
         title_elem = item.find("title")
@@ -31,7 +32,6 @@ def parse_rss(xml_content: str) -> list[str]:
         if title and " (Steam)" in title:
             title = title.split(" (Steam)")[0]
 
-        # Ensure title is a string for typing (though Element.text is str | None)
         if not title:
             title = ""
 
@@ -49,7 +49,7 @@ def parse_rss(xml_content: str) -> list[str]:
         if pub_date_str:
             try:
                 dt = parsedate_to_datetime(pub_date_str)
-                if dt.date() == today:
+                if dt.date() in (today, yesterday):
                     valid_titles.append(title)
             except (ValueError, TypeError):
                 continue
@@ -58,7 +58,7 @@ def parse_rss(xml_content: str) -> list[str]:
 
 
 async def get_free_steam_games() -> list[str]:
-    """Получает список бесплатных раздач Steam на сегодня."""
+    """Получает список бесплатных раздач Steam на сегодня и вчера."""
     url = "https://www.gamerpower.com/rss/steam"
     try:
         xml_content = await fetch_rss(url)

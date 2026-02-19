@@ -1,0 +1,1 @@
+"https://www.gamerpower.com/rss/steam"

@@ -8,34 +8,22 @@ class Embeds:
     def success(title: str, description: str) -> discord.Embed:
         """Создает Embed для успешного выполнения операции."""
         return discord.Embed(
-            title=f"✅ {title}",
-            description=description,
-            color=discord.Color.green()
+            title=f"✅ {title}", description=description, color=discord.Color.green()
         )
 
     @staticmethod
     def error(title: str, description: str) -> discord.Embed:
         """Создает Embed для сообщения об ошибке."""
-        return discord.Embed(
-            title=f"❌ {title}",
-            description=description,
-            color=discord.Color.red()
-        )
+        return discord.Embed(title=f"❌ {title}", description=description, color=discord.Color.red())
 
     @staticmethod
     def info(title: str, description: str) -> discord.Embed:
         """Создает информационный Embed."""
-        return discord.Embed(
-            title=f"ℹ️ {title}",
-            description=description,
-            color=discord.Color.blue()
-        )
+        return discord.Embed(title=f"ℹ️ {title}", description=description, color=discord.Color.blue())
 
     @staticmethod
     def warning(title: str, description: str) -> discord.Embed:
         """Создает предупреждающий Embed."""
         return discord.Embed(
-            title=f"⚠️ {title}",
-            description=description,
-            color=discord.Color.orange()
+            title=f"⚠️ {title}", description=description, color=discord.Color.orange()
         )

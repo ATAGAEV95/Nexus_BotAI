@@ -1,37 +1,27 @@
-import asyncio
-import logging
-from app.core.config import settings
+import discord
+
 from app.core.bot import DisBot
-from app.data.models import init_db
-from app.services.scheduler import setup_scheduler
+from app.core.config import settings
 
-# Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
 
-async def main():
-    logger.info("Запуск Nexus Bot AI...")
-    
-    # Инициализация БД
-    await init_db()
-    
-    # Инициализация бота
-    bot = DisBot()
-    
-    # Запуск планировщика
-    await setup_scheduler(bot)
-    
-    # Запуск бота
-    async with bot:
-        await bot.start(settings.DC_TOKEN)
+
+def main() -> None:
+    """Запуск бота."""
+    bot = DisBot(
+        command_prefix="?",
+        intents=intents,
+        help_command=None,
+    )
+
+    if not settings.DC_TOKEN:
+        print("Ошибка: DC_TOKEN не найден в переменных окружения!")
+        return
+
+    bot.run(settings.DC_TOKEN)
+
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("Бот остановлен пользователем.")
-    except Exception as e:
-        logger.critical(f"Критическая ошибка: {e}")
+    main()

@@ -1,61 +1,57 @@
 import asyncio
-import logging
 import os
 import sys
+
 import discord
 from dotenv import load_dotenv
 
-# Настройка логирования
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger("SanityCheck")
 
-def check_imports():
-    logger.info("Проверка импортов...")
+def check_imports() -> None:
+    """Проверяет возможность импорта всех необходимых библиотек."""
+    print("Проверка импортов...")
     try:
-        import discord
-        import sqlalchemy
-        import asyncpg
-        import aiohttp
-        import apscheduler
-        logger.info("✅ Все необходимые библиотеки найдены.")
+        import aiohttp  # noqa: F401
+        import apscheduler  # noqa: F401
+        import asyncpg  # noqa: F401
+        import discord  # noqa: F401
+        import sqlalchemy  # noqa: F401
+        print("✅ Все необходимые библиотеки найдены.")
     except ImportError as e:
-        logger.critical(f"❌ Ошибка импорта: {e}")
+        print(f"❌ Ошибка импорта: {e}")
         sys.exit(1)
 
-def check_env():
-    logger.info("Проверка переменных окружения...")
+def check_env() -> None:
+    """Проверяет наличие обязательных переменных окружения."""
+    print("Проверка переменных окружения...")
     load_dotenv()
     
-    required_vars = ["DC_TOKEN", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]
+    required_vars = ["DC_TOKEN", "DATABASE_URL"]
     missing = [var for var in required_vars if not os.getenv(var)]
     
     if missing:
-        logger.critical(f"❌ Отсутствуют переменные окружения: {', '.join(missing)}")
-        # Не выходим, так как это может быть запущено в CI без полного env, но предупреждаем
+        print(f"❌ Отсутствуют переменные окружения: {', '.join(missing)}")
     else:
-        logger.info("✅ Все критические переменные окружения найдены.")
+        print("✅ Все критические переменные окружения найдены.")
 
-async def check_discord_connection():
-    logger.info("Проверка подключения к Discord API...")
+async def check_discord_connection() -> None:
+    """Пытается установить соединение с Discord API для проверки токена."""
+    print("Проверка подключения к Discord API...")
     token = os.getenv("DC_TOKEN_TEST") or os.getenv("DC_TOKEN")
     
     if not token:
-        logger.warning("⚠️ Токен не найден, пропускаем проверку подключения к Discord.")
+        print("⚠️ Токен не найден, пропускаем проверку подключения к Discord.")
         return
 
     client = discord.Client(intents=discord.Intents.default())
     
     @client.event
     async def on_ready():
-        logger.info(f"✅ Успешное подключение к Discord как {client.user}")
+        print(f"✅ Успешное подключение к Discord как {client.user}")
         await client.close()
 
     @client.event
-    async def on_error(event, *args, **kwargs):
-        logger.critical(f"❌ Ошибка при подключении к Discord: {event}")
+    async def on_error(event: str, *args: list, **kwargs: dict) -> None:
+        print(f"❌ Ошибка при подключении к Discord: {event}")
         await client.close()
         sys.exit(1)
 
@@ -63,18 +59,18 @@ async def check_discord_connection():
         await client.login(token)
         await client.connect(reconnect=False)
     except discord.LoginFailure:
-        logger.critical("❌ Неверный токен Discord.")
+        print("❌ Неверный токен Discord.")
         sys.exit(1)
     except Exception as e:
-        logger.critical(f"❌ Ошибка соединения: {e}")
+        print(f"❌ Ошибка соединения: {e}")
         sys.exit(1)
 
-async def main():
-    logger.info("=== Запуск проверки системы (Sanity Check) ===")
+async def main() -> None:
+    """Основная функция запуска Sanity Check."""
+    print("=== Запуск проверки системы (Sanity Check) ===")
     check_imports()
     check_env()
-    # await check_discord_connection() # Можно включить при необходимости, но требует валидный токен
-    logger.info("=== Проверка системы завершена успешно ===")
+    print("=== Проверка системы завершена успешно ===")
 
 if __name__ == "__main__":
     asyncio.run(main())

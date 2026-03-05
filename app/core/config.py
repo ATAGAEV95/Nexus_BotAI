@@ -13,8 +13,8 @@ class Config:
         self.DC_TOKEN = os.getenv("DC_TOKEN")
         self.DC_TOKEN_TEST = os.getenv("DC_TOKEN_TEST")
         self.DATABASE_URL = os.getenv("DATABASE_URL")
-        self.PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
         self.APS_COALESCE_MS = int(os.getenv("APS_COALESCE_MS", "50"))
+        self.SCREENSHOT_CHANNEL_ID = int(os.getenv("SCREENSHOT_CHANNEL_ID", "0"))
 
         self._validate()
 

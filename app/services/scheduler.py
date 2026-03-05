@@ -3,7 +3,7 @@ import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.core.embeds import Embeds
-from app.data.requests import get_active_steam_subscriptions, is_game_new_and_save
+from app.data.request import get_active_steam_subscriptions, is_game_new_and_save
 from app.services.steam import get_free_steam_games
 
 DB_TIMEOUT = 10

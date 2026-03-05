@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Integer,
     String,
+    Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
@@ -73,6 +74,17 @@ class SteamGame(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False, unique=True)
+    created_at = Column(DateTime, default=func.now())
+
+
+class Nickname(Base):
+    """Модель игрового ника."""
+
+    __tablename__ = "nicknames"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nickname = Column(String(50), nullable=False, unique=True)
+    description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now())
 
 

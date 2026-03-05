@@ -37,7 +37,6 @@ else:
             print("Тест подключения к Discord прошел успешно.")
             await self.close()
 
-
     intents = discord.Intents.default()
     client = TestClient(intents=intents)
 

@@ -20,18 +20,19 @@ class General(commands.Cog):
     @commands.command(name="help")
     async def help_command(self, ctx: commands.Context) -> None:
         """Показывает список доступных команд."""
-        embed = Embeds.info("Помощь", "Список доступных команд:")
+        async with ctx.typing():
+            embed = Embeds.info("Помощь", "Список доступных команд:")
 
-        for cog_name, cog in self.bot.cogs.items():
-            command_list = ""
-            for command in cog.get_commands():
-                if not command.hidden:
-                    command_list += f"`?{command.name}` - {command.help}\n"
+            for cog_name, cog in self.bot.cogs.items():
+                command_list = ""
+                for command in cog.get_commands():
+                    if not command.hidden:
+                        command_list += f"`?{command.name}` - {command.help}\n"
 
-            if command_list:
-                embed.add_field(name=cog_name, value=command_list, inline=False)
+                if command_list:
+                    embed.add_field(name=cog_name, value=command_list, inline=False)
 
-        await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

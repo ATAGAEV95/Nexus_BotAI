@@ -118,3 +118,46 @@ async def find_nickname(session: AsyncSession, nickname: str) -> tuple[str, str 
     result = await session.execute(stmt)
     row = result.one_or_none()
     return (row[0], row[1]) if row else None
+
+
+@db_operation("подсчёте ников")
+async def count_nicknames(session: AsyncSession) -> int:
+    """Возвращает общее количество ников в БД."""
+    stmt = select(func.count()).select_from(Nickname)
+    result = await session.execute(stmt)
+    return result.scalar_one()
+
+
+@db_operation("добавлении/обновлении ника с описанием")
+async def upsert_nickname(session: AsyncSession, nickname: str, description: str) -> bool:
+    """Добавляет ник с описанием или обновляет описание если ник уже есть.
+
+    Возвращает True если ник был создан, False если обновлён.
+    """
+    stmt = select(Nickname).where(func.lower(Nickname.nickname) == nickname.lower())
+    result = await session.execute(stmt)
+    existing = result.scalar_one_or_none()
+
+    if existing:
+        existing.description = description  # type: ignore
+        await session.commit()
+        return False
+
+    session.add(Nickname(nickname=nickname, description=description))
+    await session.commit()
+    return True
+
+
+@db_operation("удалении ника")
+async def delete_nickname(session: AsyncSession, nickname: str) -> bool:
+    """Удаляет ник из БД (case-insensitive). Возвращает True если ник был найден и удалён."""
+    stmt = select(Nickname).where(func.lower(Nickname.nickname) == nickname.lower())
+    result = await session.execute(stmt)
+    existing = result.scalar_one_or_none()
+
+    if not existing:
+        return False
+
+    await session.delete(existing)
+    await session.commit()
+    return True

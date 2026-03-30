@@ -18,19 +18,17 @@ jobs:
       - name: Build Docker image
         run: docker build . --file Dockerfile --tag discordnexusbot:latest
 
-      # Шаг 3: Остановка старого контейнера и создание томов
-      - name: Stop and remove old container, create volumes
+      # Шаг 3: Остановка старого контейнера
+      - name: Stop and remove old container
         run: |
           docker stop nexusbot || true
           docker rm nexusbot || true
-          docker volume create chroma_data || true
 
-      # Шаг 4: Запуск нового контейнера с передачей всех нужных переменных окружения и томов
+      # Шаг 4: Запуск нового контейнера с передачей всех нужных переменных окружения
       - name: Run new container
         run: |
           docker run -d --name nexusbot \
             --restart unless-stopped \
-            -v chroma_data:/python-app/chroma_db \
             -e DC_TOKEN="${{ secrets.DC_TOKEN }}" \
             -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             -e AI_TOKEN_POLZA="${{ secrets.AI_TOKEN_POLZA }}" \

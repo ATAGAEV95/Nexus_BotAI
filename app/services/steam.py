@@ -35,6 +35,9 @@ def parse_rss(xml_content: str) -> list[str]:
         if not title:
             title = ""
 
+        if "giveaway" in title.lower():
+            continue
+
         description_elem = item.find("description")
         description = ""
         if description_elem is not None and description_elem.text is not None:
